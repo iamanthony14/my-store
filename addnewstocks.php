@@ -28,6 +28,8 @@ else{
         <input type="text" name="brand_name" id="brand_name" required>
         <label for="">Qty</label>
         <input type="number" name="qty" id="qty" required>
+        <label for="">Price</label>
+        <input type="text" name="price" id="price" required>
         <label for="">Batch number</label>
         <input type="text" name="batch_number" id="batch_number" required>
         <input type="hidden" name="product_id" value="<?= $product['ID']; ?>">

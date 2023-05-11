@@ -197,7 +197,7 @@ Class Mystore{
     public function get_single_product($id)
     {
         $connection = $this->openConnection();
-        $stmt = $connection->prepare("SELECT product_name, product_type, min_stock, SUM(qty) AS total FROM (SELECT * FROM products WHERE products.ID=?) t1 INNER JOIN product_items t2 ON t1.ID = t2.product_id");
+        $stmt = $connection->prepare("SELECT t1.ID, product_name, product_type, min_stock, SUM(qty) AS total FROM (SELECT * FROM products WHERE products.ID=?) t1 INNER JOIN product_items t2 ON t1.ID = t2.product_id");
         $stmt->execute([$id]);
         $product = $stmt->fetch();
         $total = $stmt->rowCount();
@@ -229,10 +229,11 @@ Class Mystore{
             $batch_number = $_POST['batch_number'];
             $product_id = $_POST['product_id'];
             $added_by = $_POST['added_by'];
+            $price = $_POST['price'];
 
             $connection = $this->openConnection();
-            $stmt = $connection->prepare("INSERT INTO product_items (`product_id`,`qty`,`vendor`,`added_by`,`batch_number`) VALUES(?,?,?,?,?)");
-            $stmt->execute([$product_id,$qty,$brand_name,$added_by,$batch_number]);
+            $stmt = $connection->prepare("INSERT INTO product_items (`product_id`,`qty`,`vendor`,`added_by`,`batch_number`,`price`) VALUES(?,?,?,?,?,?)");
+            $stmt->execute([$product_id,$qty,$brand_name,$added_by,$batch_number,$price]);
             
             header("Location: product_details.php?id=".$product_id);
         }
@@ -252,6 +253,34 @@ Class Mystore{
         else{
             return FALSE;
         }
+    }
+
+    public function get_stock_details($stock_id)
+    {
+        $connection = $this->openConnection();
+        $stmt = $connection->prepare("SELECT * FROM product_items WHERE ID=?");
+        $stmt->execute([$stock_id]);
+        $stocks = $stmt->fetch();
+        $total = $stmt->rowCount();
+
+        if($total > 0){
+            return $stocks;
+        }
+        else{
+            return FALSE;
+        }
+    }
+
+    public function insert_sales($stock_id, $qty, $price, $product_id ,$customer_name)
+    {
+
+        $item = $this->get_stock_details($stock_id);
+
+        $brand = $item['vendor'];
+
+        $connection = $this->openConnection();
+        $stmt = $connection->prepare("INSERT INTO sales (`product_id`, `stock_id`, `brand_name`, `qty`, `price`, `customer_name`) VALUES(?,?,?,?,?,?)");
+        $stmt->execute([$product_id,$stock_id,$brand,$qty,$price,$customer_name]);
     }
 }
 $store = new MyStore();
