@@ -242,8 +242,9 @@ Class Mystore{
     public function view_all_stocks($product_id)
     {
         $connection = $this->openConnection();
-        $stmt = $connection->prepare("SELECT * FROM product_items WHERE product_id=?");
-        $stmt->execute([$product_id]);
+        // $stmt = $connection->prepare("SELECT * FROM product_items WHERE product_id=?");
+        $stmt = $connection->prepare("SELECT t1.ID, t1.vendor, t1.price, t2.ID, t1.qty, SUM(t2.qty) AS sale_qty, SUM(t2.qty * t2.price) AS total_sales FROM product_items t1 INNER JOIN sales t2 ON  t1.ID = t2.stock_id GROUP BY t1.ID");
+        $stmt->execute();
         $stocks = $stmt->fetchAll();
         $total = $stmt->rowCount();
 

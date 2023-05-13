@@ -25,23 +25,52 @@ else{
 </head>
 <body>
     <h1><?= $product['product_name'] ?></h1>
-    <h2><?= $product['product_type'] ?></h2>
-    <h3><?= $product['min_stock'] ?></h3>
+    <h2>Category : <?= $product['product_type'] ?></h2>
+    <h3>Min. Stock : <?= $product['min_stock'] ?></h3>
     <br>
     <h4>Total : <?= $product['total']; ?></h4>
     <hr>
     <h2>Available Product Items</h2>
-    <?php foreach($stocks as $stock){ ?>
 
-    <div id="parent_<?= $stock['ID']; ?>">
-        <label><?= $stock['vendor']." ".$stock['qty']; ?></label>
-        <input type="number" name="qty[]" min="1" max="<?=$stock['qty'];?>" value="1">
-        <input type="hidden" name="price[]" value="<?= $stock['price']; ?>">
-        <input type="hidden" name="stock_id[]" value="<?= $stock['ID'];?>">
-        <button type="button" class="add_cart">Add To Cart</button>
-        <button type="button" class="remove_cart" disabled id="<?= $stock['ID']; ?>">Remove</button>
-    </div>
-    <?php } ?>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Base Stock Qty</th>
+                <th>SRP</th>
+                <th>Sales Qty</th>
+                <th>Total Sales</th>
+                <th>Qty Remaining</th>
+                <th>Statuss</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <?php foreach($stocks as $stock){ ?>
+                <?php $sum = $stock['qty'] - $stock['sale_qty']; ?>
+                <tr>
+                    <td>
+                        <div id="parent_<?= $stock['ID']; ?>">
+                            <label><?= $stock['vendor']." ".$stock['qty']; ?></label>
+                            <input type="number" name="qty[]" min="1" max="<?=$stock['qty'];?>" value="1">
+                            <input type="hidden" name="price[]" value="<?= $stock['price']; ?>">
+                            <input type="hidden" name="stock_id[]" value="<?= $stock['ID'];?>">
+                            <button type="button" class="add_cart">Add To Cart</button>
+                            <button type="button" class="remove_cart" disabled id="<?= $stock['ID']; ?>">Remove</button>
+                        </div>
+                    </td>
+                    <td><?= $stock['qty']; ?></td>
+                    <td><?= sprintf('%01.2f', $stock['price']); ?></td>
+                    <td><?= $stock['sale_qty'] ?></td>
+                    <td><?= sprintf('%01.2f', $stock['total_sales']); ?></td>
+                    <td><?= $sum; ?></td>
+                    <td><?= ($sum == 0)? 'Out of stock' : 'Available'; ?></td>
+                </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+
+    
     <a href="products.php">Products</a>
     <a href="addnewstocks.php?id=<?= $id; ?>">Add New Stock</a>
 

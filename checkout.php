@@ -8,6 +8,6 @@ for($i = 0; $i < $total; $i++){
     
 }
 
-
+header("Location:".$_SERVER['HTTP_REFERER']);
 
 ?>

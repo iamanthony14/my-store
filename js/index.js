@@ -9,7 +9,8 @@ if(add_cart){
             let added_item = element.parentNode.cloneNode(true);
             element.parentNode.classList.add('disabledbtn');
             form_cart.prepend(added_item);
-            added_item.children[3].removeAttribute('disabled');
+            added_item.children[5].removeAttribute('disabled');
+            
             ActiveRemove();
         });
     });
