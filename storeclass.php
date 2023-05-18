@@ -243,8 +243,8 @@ Class Mystore{
     {
         $connection = $this->openConnection();
         // $stmt = $connection->prepare("SELECT * FROM product_items WHERE product_id=?");
-        $stmt = $connection->prepare("SELECT t1.ID, t1.vendor, t1.price, t2.ID, t1.qty, SUM(t2.qty) AS sale_qty, SUM(t2.qty * t2.price) AS total_sales FROM product_items t1 INNER JOIN sales t2 ON  t1.ID = t2.stock_id GROUP BY t1.ID");
-        $stmt->execute();
+        $stmt = $connection->prepare("SELECT t1.ID, t1.vendor, t1.price, t1.qty, SUM(t2.qty) AS sale_qty, SUM(t2.qty * t2.price) AS total_sales FROM product_items t1 LEFT JOIN sales t2 ON  t1.ID = t2.stock_id WHERE t1.product_id = ? GROUP BY t1.ID");
+        $stmt->execute([$product_id]);
         $stocks = $stmt->fetchAll();
         $total = $stmt->rowCount();
 

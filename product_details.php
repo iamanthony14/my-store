@@ -4,6 +4,7 @@ $id = $_GET['id'];
 $product = $store->get_single_product($id);
 $stocks = $store->view_all_stocks($id);
 $userdetails = $store->get_userdata();
+$inventory_array = array();
 
 if(isset($userdetails)){
     if($userdetails['access']!= "administrator"){
@@ -28,7 +29,7 @@ else{
     <h2>Category : <?= $product['product_type'] ?></h2>
     <h3>Min. Stock : <?= $product['min_stock'] ?></h3>
     <br>
-    <h4>Total : <?= $product['total']; ?></h4>
+   
     <hr>
     <h2>Available Product Items</h2>
 
@@ -46,9 +47,12 @@ else{
         </thead>
 
         <tbody>
+            <?php if(is_array($stocks)){ ?>
             <?php foreach($stocks as $stock){ ?>
-                <?php $sum = $stock['qty'] - $stock['sale_qty']; ?>
-                <tr>
+                <?php $sum = $stock['qty'] - $stock['sale_qty'];
+                    $inventory_array[] = $sum;
+                ?>
+                <tr class="<?= ($sum == 0)? 'disabledbtn' : ''; ?>">
                     <td>
                         <div id="parent_<?= $stock['ID']; ?>">
                             <label><?= $stock['vendor']." ".$stock['qty']; ?></label>
@@ -65,10 +69,28 @@ else{
                     <td><?= sprintf('%01.2f', $stock['total_sales']); ?></td>
                     <td><?= $sum; ?></td>
                     <td><?= ($sum == 0)? 'Out of stock' : 'Available'; ?></td>
+                    
                 </tr>
+            <?php } ?>
             <?php } ?>
         </tbody>
     </table>
+
+    <h4>Total Inventory : <?= $product['total']; ?></h4>
+    <h4>Actual Inventory : <?= array_sum($inventory_array); ?></h4>
+    <h4>Actual Inventory :
+    <?php
+        if(array_sum($inventory_array) <= $product['min_stock'] && array_sum($inventory_array) != 0){
+            echo "Low Inventory";
+        }
+        elseif(array_sum($inventory_array) == 0){
+            echo "Out Of Stock";
+        }
+        else{
+            echo "On Sale";
+        }
+    ?></h4>
+    <br>
 
     
     <a href="products.php">Products</a>
